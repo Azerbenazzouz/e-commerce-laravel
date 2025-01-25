@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\AuthRequest;
+use App\Http\Requests\RefreshTokenRequest;
 use App\Http\Resources\ApiResource;
 use App\Service\Impl\RefreshTokenService;
 use Illuminate\Http\Response;
@@ -32,7 +33,7 @@ class AuthController extends Controller {
         $refreshTokenPayload = [
             'refresh_token' => Str::uuid(),
             'user_id' => auth('api')->user()->id,
-            'expires_at' => now()->addDay() // expired in 1 day
+            'expires_at' => now()->addMonth()// expired in 1 day
         ];
 
         if($this->refreshTokenService->create($refreshTokenPayload)) {
@@ -49,7 +50,7 @@ class AuthController extends Controller {
             'accessToken' => $token,
             'refreshToken' => $refreshTokenPayload['refresh_token'],
             'tokenType' => 'bearer',
-            'expiresIn' => auth('api')->factory()->getTTL() * 60
+            'expiresIn' => auth('api')->factory()->getTTL()
         ];
     }
 
@@ -63,5 +64,9 @@ class AuthController extends Controller {
         auth('api')->logout();
             $resource = ApiResource::ok([], 'SUCCESS', Response::HTTP_OK);
         return response()->json($resource, Response::HTTP_OK);
+    }
+
+    public function refreshToken(RefreshTokenRequest $request) {
+        return "response";
     }
 }

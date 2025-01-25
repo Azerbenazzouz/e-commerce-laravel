@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::group(['prefix' => 'v1/auth'], function ($router) {
     Route::post('login', [AuthController::class, 'authenticate']);
+    Route::post('refresh-token', [AuthController::class, 'refreshToken']);
     Route::middleware('jwt')->group(function() {
         Route::get('me', [AuthController::class, 'me']);
         Route::post('logout', [AuthController::class, 'logout']);
