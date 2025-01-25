@@ -5,12 +5,16 @@ namespace App\Http\Controllers\Api\V1;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\AuthRequest;
 use App\Http\Resources\ApiResource;
+use App\Service\Impl\RefreshTokenService;
 use Illuminate\Http\Response;
+use Illuminate\Support\Str;
 
 class AuthController extends Controller {
 
-    public function __construct() {
+    private $refreshTokenService;
 
+    public function __construct(RefreshTokenService $refreshTokenService) {
+        $this->refreshTokenService = $refreshTokenService;
     }
 
 
@@ -21,19 +25,31 @@ class AuthController extends Controller {
         ];
 
         if (! $token = auth('api')->attempt($credentials)) {
-            $resource = ApiResource::message('Unauthoruzed', Response::HTTP_UNAUTHORIZED);
+            $resource = ApiResource::message('Unauthorized', Response::HTTP_UNAUTHORIZED);
             return response()->json($resource, Response::HTTP_UNAUTHORIZED);
         }
+        // create Refresh Token
+        $refreshTokenPayload = [
+            'refresh_token' => Str::uuid(),
+            'user_id' => auth('api')->user()->id,
+            'expires_at' => now()->addDay() // expired in 1 day
+        ];
 
-        $resource = ApiResource::ok($this->respondWithToken($token), 'SUCCESS', Response::HTTP_OK);
-        return response()->json($resource, Response::HTTP_OK);
+        if($this->refreshTokenService->create($refreshTokenPayload)) {
+            $resource = ApiResource::ok($this->respondWithToken($token, $refreshTokenPayload), 'SUCCESS', Response::HTTP_OK);
+            return response()->json($resource, Response::HTTP_OK);
+        }
+        
+        $resource = ApiResource::message('Unauthorized', Response::HTTP_UNAUTHORIZED);
+        return response()->json($resource, Response::HTTP_UNAUTHORIZED);
     }
 
-    protected function respondWithToken($token) {
+    protected function respondWithToken($token, $refreshTokenPayload) {
         return [
-            'access_token' => $token,
-            'token_type' => 'bearer',
-            'expires_in' => auth('api')->factory()->getTTL() * 60
+            'accessToken' => $token,
+            'refreshToken' => $refreshTokenPayload['refresh_token'],
+            'tokenType' => 'bearer',
+            'expiresIn' => auth('api')->factory()->getTTL() * 60
         ];
     }
 
@@ -45,7 +61,7 @@ class AuthController extends Controller {
 
     public function logout() {
         auth('api')->logout();
-        $resource = ApiResource::ok([], 'SUCCESS', Response::HTTP_OK);
+            $resource = ApiResource::ok([], 'SUCCESS', Response::HTTP_OK);
         return response()->json($resource, Response::HTTP_OK);
     }
 }
