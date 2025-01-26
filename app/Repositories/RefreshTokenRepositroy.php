@@ -18,4 +18,10 @@ class RefreshTokenRepositroy extends BaseRepositroy {
             ->first();
     }
 
+    public function deleteByUserId(int $userId = 0) {
+        return $this->model
+            ->where('user_id', $userId)
+            ->delete();
+    }
+
 }
