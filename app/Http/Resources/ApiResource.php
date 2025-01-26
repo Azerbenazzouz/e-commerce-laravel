@@ -9,41 +9,35 @@ class ApiResource extends JsonResource
 {
 
     public static function ok(array $data = [], string $message = '', int $code = 200) {
-        return [
+        return response()->json([
             'status' => true,
             'code' => $code,
             'message' => $message,
             'data' => $data,
             'timestamp' => now()
-        ];
+        ], $code);
     }
 
     public static function error(array $errors = [], string $message = '', int $code = 400) {
-        return [
+        return response()->json([
             'status' => false,
             'code' => $code,
             'message' => $message,
             'errors' => $errors,
             'timestamp' => now()
-        ];
+        ], $code);
     }
 
     public static function message(string $message, int $code = 200) {
-        return [
-            'status' => $code === 200,
-            'message' => $message,
+        return response()->json([
+            'status' => true,
             'code' => $code,
+            'message' => $message,
             'timestamp' => now()
-        ];
+        ], $code);
     }
 
-    /**
-     * Transform the resource into an array.
-     *
-     * @return array<string, mixed>
-     */
-    public function toArray(Request $request): array
-    {
+    public function toArray(Request $request): array {
         return parent::toArray($request);
     }
 }
