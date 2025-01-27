@@ -9,7 +9,7 @@ use Illuminate\Http\Response;
 
 abstract class BaseController extends Controller {
     protected $service;
-
+    protected $resource;
     abstract protected function getStoreRequest() : string;
     abstract protected function getUpdateRequest() : string;
 
@@ -18,11 +18,14 @@ abstract class BaseController extends Controller {
     }
 
     public function store(Request $request) {
-        $validator = app($this->getStoreRequest());
-        $storeRequest = $validator->validate($validator->rules());
-        if($data = $this->service->create($request)){
-            return ApiResource::ok($data, 'Successfully created', Response::HTTP_CREATED);
+        $storeRequest = app($this->getStoreRequest());
+        $storeRequest->validated();
+    
+        $result = $this->service->create($request);
+        if ($result['flag']) {
+            $objectResource = new $this->resource($result['data']);
+            return ApiResource::ok($objectResource->toArray($request), 'Data created successfully', Response::HTTP_CREATED);
         }
-        return ApiResource::error($data, 'Failed to create', Response::HTTP_BAD_REQUEST);
+        return ApiResource::error($result, 'Failed to create', Response::HTTP_BAD_REQUEST);
     }
 }

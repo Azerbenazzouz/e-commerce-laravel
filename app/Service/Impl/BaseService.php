@@ -27,19 +27,27 @@ abstract class BaseService {
         return $this;
     }
 
-    public function create(Request $request){
+    public function create(Request $request): array {
         DB::beginTransaction();
         try {
             $payload = $this
                 ->setPayload($request)
                 ->processPayload()
                 ->buildPayload();
-            dd($payload);
+            
+            $result = $this->repository->create($payload)->toArray();
+
             DB::commit();
-            return true;
+            return [
+                'data' => $result,
+                'flag' => true
+            ];
         } catch (\Exception $e) {
             DB::rollBack();
-            return false;
+            return [
+                'error' => $e->getMessage(),
+                'flag' => false
+            ];
         }
     }
 }
