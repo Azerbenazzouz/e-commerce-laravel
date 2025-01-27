@@ -2,9 +2,9 @@
 
 namespace App\Http\Requests\Role;
 
-use Illuminate\Foundation\Http\FormRequest;
+use App\Http\Requests\BaseRequest;
 
-class CreateRequest extends FormRequest {
+class StoreRequest extends BaseRequest {
 
     public function authorize(): bool
     {
@@ -14,7 +14,8 @@ class CreateRequest extends FormRequest {
     public function rules(): array
     {
         return [
-            'name' => 'required'
+            'name' => 'required',
+            'publish' => 'gt:0',
         ];
     }
 }
