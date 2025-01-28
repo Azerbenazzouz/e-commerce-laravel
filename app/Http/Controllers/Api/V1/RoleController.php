@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Requests\Role\StoreRequest;
 use App\Http\Requests\Role\UpdateRequest;
+use App\Http\Requests\Role\DeleteRequest;
 use App\Http\Resources\RoleResource;
 use App\Service\Impl\RoleService;
 
@@ -30,5 +31,9 @@ class RoleController extends BaseController {
 
     protected function getUpdateRequest(): string {
         return UpdateRequest::class;
+    }
+
+    protected function getDeleteRequest(): string {
+        return DeleteRequest::class;
     }
 }

@@ -12,6 +12,7 @@ abstract class BaseController extends Controller {
     protected $resource;
     abstract protected function getStoreRequest() : string;
     abstract protected function getUpdateRequest() : string;
+    abstract protected function getDeleteRequest() : string;
 
     public function __construct($service = null) {
         $this->service = $service;
@@ -45,6 +46,7 @@ abstract class BaseController extends Controller {
     }
 
     public function destroy($id) {
+        $this->handleRequest($this->getDeleteRequest());
         $result = $this->service->delete($id);
         if ($result['flag']) {
             return ApiResource::ok($result, 'Data deleted successfully', Response::HTTP_OK);
