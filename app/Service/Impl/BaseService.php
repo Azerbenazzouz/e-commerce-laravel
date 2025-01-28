@@ -7,8 +7,14 @@ use Illuminate\Support\Facades\DB;
 abstract class BaseService {
     protected $repository;
     protected $payload;
+    protected $operators = ['gt', 'gte', 'lt', 'lte'];
 
     abstract protected function requestPayload(): array;
+    abstract protected function getSearchFieald(): array;
+    abstract protected function getPerpage(): int;
+    abstract protected function getSimpleFilter(): array;
+    abstract protected function getComplexFilter(): array;
+    abstract protected function getDateFilter(): array;
 
     public function __construct($repository){
         $this->repository = $repository;
@@ -28,8 +34,59 @@ abstract class BaseService {
         }
     }
 
-    public function paginate() {
-        return $this->repository->paginate();
+    private function keywordFilter(){
+        
+    }
+
+    private function simpleFilter(Request $request ,array $filters = []){
+        $simpleFilter = [];
+        if(count($filters)) {
+            foreach($filters as $filter) {
+                if($request->has($filter)) {
+                    $simpleFilter[$filter] = $request->input($filter);
+                }
+            }
+        }
+        return $simpleFilter;
+    }
+
+    private function complexFilter(Request $request, array $complexFilters = []){
+        $conditions = [];
+        foreach($complexFilters as $filter) {
+            $conditions[$filter] = $request->input($filter);
+        }
+        return $conditions;
+    }
+
+    private function dateFilter(Request $request,array $dateFilters = []){
+        $dateFilter = [];
+        if(count($dateFilters)) {
+            foreach($dateFilters as $filter) {
+                if($request->has($filter)) {
+                    $dateFilter[$filter] = $request->input($filter);
+                }
+            }
+        }
+        return $dateFilter;
+
+    }
+    private function specifications(Request $request){
+        return [
+            'keyword' => [
+                'q' => $request->input('keyword'),
+                'field' => $this->getSearchFieald()
+            ],
+            'sortBy' => ($request->input('sortBy')) ? explode(',', $request->input('sortBy')) : ['id', 'desc'],
+            'perpage' => ($request->input('perpage')) ? $request->input('perpage') : $this->getPerpage(),
+            'simpleFilter' => $this->simpleFilter($request, $this->getSimpleFilter()),
+            'complexFilter' => $this->complexFilter($request, $this->getComplexFilter()),
+            'dateFilter' => $this->dateFilter($request, $this->getDateFilter()),
+        ];
+    }
+
+    public function paginate($request) {
+        $specification = $this->specifications($request);
+        return $this->repository->paginate($specification);
     }
 
     protected function setPayload(Request $request) {

@@ -20,6 +20,27 @@ class RoleService extends BaseService {
         return ['name', 'publish'];
     }
 
+    protected function getSearchFieald(): array {
+        return ['name',];
+    }
+
+    protected function getPerpage() : int {
+        return 20;
+    }
+
+    protected function getSimpleFilter() : array {
+        return ['publish'];
+    }
+
+    protected function getComplexFilter(): array{
+        return ['id'];
+    }
+
+    protected function getDateFilter(): array {
+        return ['created_at'];
+    }
+
+
     protected function processPayload() {
         return $this
             ->generateSlug($this->payload['name'])

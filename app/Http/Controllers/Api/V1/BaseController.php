@@ -21,11 +21,15 @@ abstract class BaseController extends Controller {
 
     public function index(Request $request) {
         $data = $this->service->paginate($request);
+        // $resourceCollection = $this->resource::collection($data->getCollection());
+        // $data->setCollection(
+        //     collect($resourceCollection->response()->getData(true)['data'])
+        // );
+        // 14,68
         // dd($data);
-        $resourceCollection = $this->resource::collection($data->getCollection());
-        $data->setCollection(
-            collect($resourceCollection->response()->getData(true)['data'])
-        );
+        $data->through(function($item){
+            return new $this->resource($item);
+        });
         return ApiResource::ok($data, 'Data retrieved successfully', Response::HTTP_OK);
     }
 
