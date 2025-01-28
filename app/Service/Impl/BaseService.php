@@ -14,6 +14,20 @@ abstract class BaseService {
         $this->repository = $repository;
     }
 
+    public function all() {
+        try {
+            return [
+                'data' => $this->repository->all(),
+                'flag' => true
+            ];
+        } catch (\Exception $e) {
+            return [
+                'error' => $e->getMessage(),
+                'flag' => false
+            ];
+        }
+    }
+
     protected function setPayload(Request $request) {
         $this->payload = $request->only($this->requestPayload());
         return $this;

@@ -18,6 +18,15 @@ abstract class BaseController extends Controller {
         $this->service = $service;
     }
 
+    public function all(Request $request) {
+        $result = $this->service->all();
+        if ($result['flag']) {
+            $objectResource = $this->resource::collection($result['data']);
+            return ApiResource::ok($objectResource->toArray($request), 'Data retrieved successfully', Response::HTTP_OK);
+        }
+        return ApiResource::error($result, 'Failed to retrieve', Response::HTTP_BAD_REQUEST);
+    }
+
     private function handleRequest(string $requestAction = '') {
         $storeRequest = app($requestAction);
         $storeRequest->validated();

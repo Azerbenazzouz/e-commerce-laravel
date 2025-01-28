@@ -13,7 +13,7 @@ class RoleResource extends JsonResource {
             'id' => $this['id'],
             'name' => $this['name'],
             // 'slug' => $this['slug'],
-            'publish' => $this['publish'],
+            // 'publish' => $this['publish'],
         ];
     }
 }
