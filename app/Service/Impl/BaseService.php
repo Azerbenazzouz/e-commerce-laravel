@@ -50,4 +50,22 @@ abstract class BaseService {
             ];
         }
     }
+
+    public function delete(int $id) {
+        DB::beginTransaction();
+        try {      
+            $this->repository->delete($id);
+
+            DB::commit();
+            return [
+                'flag' => true
+            ];
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return [
+                'error' => $e->getMessage(),
+                'flag' => false
+            ];
+        }
+    }
 }

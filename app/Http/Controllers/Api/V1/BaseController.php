@@ -43,4 +43,12 @@ abstract class BaseController extends Controller {
         }
         return ApiResource::error($result, 'Failed to update', Response::HTTP_BAD_REQUEST);
     }
+
+    public function destroy($id) {
+        $result = $this->service->delete($id);
+        if ($result['flag']) {
+            return ApiResource::ok($result, 'Data deleted successfully', Response::HTTP_OK);
+        }
+        return ApiResource::error($result, 'Failed to delete', Response::HTTP_BAD_REQUEST);
+    }
 }

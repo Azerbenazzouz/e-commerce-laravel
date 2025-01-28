@@ -35,5 +35,9 @@ class BaseRepositroy {
         return ($id) ? $this->update($id, $payload) : $this->create($payload);
     }
 
+    public function delete(int $id) {
+        if($this->model->where('id', $id)->delete() === 0)
+            throw new \Exception('Failed to delete data with id ' . $id);
+    }
 
 }
