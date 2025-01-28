@@ -47,8 +47,9 @@ class BaseRepositroy {
     public function paginate(array $specs = []) {
         // dd($specs);
         return $this->model
-                ->keyword($specs['keyword'])
+                ->keyword($specs['keyword'] ?? [])
                 ->orderBy($specs['sortBy'][0], $specs['sortBy'][1])
+                ->simpleFilter($specs['simpleFilter'] ?? [])
                 ->paginate($specs['perpage']);
     }
 
