@@ -17,15 +17,30 @@ abstract class BaseController extends Controller {
         $this->service = $service;
     }
 
-    public function store(Request $request) {
-        $storeRequest = app($this->getStoreRequest());
+    private function handleRequest(string $requestAction = '') {
+        $storeRequest = app($requestAction);
         $storeRequest->validated();
-    
-        $result = $this->service->create($request);
+    }
+
+    public function store(Request $request) {
+        $this->handleRequest($this->getStoreRequest());
+        $result = $this->service->save($request);
         if ($result['flag']) {
             $objectResource = new $this->resource($result['data']);
             return ApiResource::ok($objectResource->toArray($request), 'Data created successfully', Response::HTTP_CREATED);
         }
         return ApiResource::error($result, 'Failed to create', Response::HTTP_BAD_REQUEST);
+    }
+
+
+    public function update(Request $request, $id) {
+        $this->handleRequest($this->getUpdateRequest());
+
+        $result = $this->service->save($request, $id);
+        if ($result['flag']) {
+            $objectResource = new $this->resource($result['data']);
+            return ApiResource::ok($objectResource->toArray($request), 'Data updated successfully', Response::HTTP_CREATED);
+        }
+        return ApiResource::error($result, 'Failed to update', Response::HTTP_BAD_REQUEST);
     }
 }

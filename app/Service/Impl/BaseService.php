@@ -27,7 +27,7 @@ abstract class BaseService {
         return $this;
     }
 
-    public function create(Request $request): array {
+    public function save(Request $request, mixed $id = null): array {
         DB::beginTransaction();
         try {
             $payload = $this
@@ -35,7 +35,7 @@ abstract class BaseService {
                 ->processPayload()
                 ->buildPayload();
             
-            $result = $this->repository->create($payload)->toArray();
+            $result = $this->repository->save($payload, $id);
 
             DB::commit();
             return [
