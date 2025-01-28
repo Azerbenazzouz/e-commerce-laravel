@@ -50,6 +50,7 @@ class BaseRepositroy {
                 ->keyword($specs['keyword'] ?? [])
                 ->orderBy($specs['sortBy'][0], $specs['sortBy'][1])
                 ->simpleFilter($specs['simpleFilter'] ?? [])
+                ->complexFilter($specs['complexFilter'] ?? [])
                 ->paginate($specs['perpage']);
     }
 

@@ -24,4 +24,33 @@ trait Query{
         }
         return $query;
     }
+
+    public function scopeComplexFilter($query, $complexFilter) {
+        $this->handleOperator($query, $complexFilter);
+        return $query;
+    }
+
+
+    private function handleOperator($query, $complexFilter){
+        if(count($complexFilter)) {
+            foreach($complexFilter as $field => $conditions) {
+                foreach ($conditions as $operator => $val) {
+                    switch ($operator) {
+                        case 'gt':
+                            $query->where($field, '>', $val);
+                            break;
+                        case 'gte':
+                            $query->where($field, '>=', $val);
+                            break;
+                        case 'lt':
+                            $query->where($field, '<', $val);
+                            break;
+                        case 'lte':
+                            $query->where($field, '<=', $val);
+                            break;
+                    }
+                }
+            }
+        }
+    }
 }
