@@ -44,4 +44,8 @@ class BaseRepositroy {
         return $this->model->all();
     }
 
+    public function paginate(int $limit = 2) {
+        return $this->model->paginate($limit);
+    }
+
 }

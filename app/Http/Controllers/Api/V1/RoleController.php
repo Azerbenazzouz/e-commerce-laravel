@@ -18,13 +18,6 @@ class RoleController extends BaseController {
         parent::__construct($roleService);
     }
 
-    public function index() {
-        return response()->json([
-            'status' => 'success',
-            'message' => 'Data retrieved successfully'
-        ], 200);
-    }
-
     protected function getStoreRequest(): string {
         return StoreRequest::class;
     }

@@ -18,6 +18,17 @@ abstract class BaseController extends Controller {
         $this->service = $service;
     }
 
+
+    public function index(Request $request) {
+        $data = $this->service->paginate($request);
+        // dd($data);
+        $resourceCollection = $this->resource::collection($data->getCollection());
+        $data->setCollection(
+            collect($resourceCollection->response()->getData(true)['data'])
+        );
+        return ApiResource::ok($data, 'Data retrieved successfully', Response::HTTP_OK);
+    }
+
     public function all(Request $request) {
         $result = $this->service->all();
         if ($result['flag']) {

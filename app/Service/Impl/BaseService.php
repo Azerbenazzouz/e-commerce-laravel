@@ -28,6 +28,10 @@ abstract class BaseService {
         }
     }
 
+    public function paginate() {
+        return $this->repository->paginate();
+    }
+
     protected function setPayload(Request $request) {
         $this->payload = $request->only($this->requestPayload());
         return $this;
