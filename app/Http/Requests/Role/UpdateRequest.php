@@ -14,7 +14,8 @@ class UpdateRequest extends BaseRequest {
     public function rules(): array
     {
         return [
-            'name' => 'required'
+            'name' => 'required',
+            'publish' => 'gt:0'
         ];
     }
 }
