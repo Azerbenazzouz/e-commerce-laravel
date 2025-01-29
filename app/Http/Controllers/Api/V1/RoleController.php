@@ -6,7 +6,7 @@ use App\Http\Requests\Role\StoreRequest;
 use App\Http\Requests\Role\UpdateRequest;
 use App\Http\Requests\Role\DeleteRequest;
 use App\Http\Resources\RoleResource;
-use App\Service\Impl\RoleService;
+use App\Service\Interfaces\RoleServiceInterface as RoleService;
 
 class RoleController extends BaseController {
 
