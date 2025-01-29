@@ -20,26 +20,27 @@ abstract class BaseController extends Controller {
 
 
     public function index(Request $request) {
-        $data = $this->service->paginate($request);
-        // $resourceCollection = $this->resource::collection($data->getCollection());
-        // $data->setCollection(
-        //     collect($resourceCollection->response()->getData(true)['data'])
-        // );
-        // 14,68
-        // dd($data);
-        $data->through(function($item){
-            return new $this->resource($item);
-        });
-        return ApiResource::ok($data, 'Data retrieved successfully', Response::HTTP_OK);
+        try {
+            $data = $this->service->paginate($request);
+            $data->through(function($item){
+                return new $this->resource($item);
+            });
+            return ApiResource::ok($data, 'Data retrieved successfully', Response::HTTP_OK);
+        } catch (\Exception $e) {
+            return ApiResource::message('Error: '.$e->getMessage(), Response::HTTP_BAD_REQUEST);
+        }    
     }
 
     public function all(Request $request) {
-        $result = $this->service->all();
-        if ($result['flag']) {
-            $objectResource = $this->resource::collection($result['data']);
-            return ApiResource::ok($objectResource->toArray($request), 'Data retrieved successfully', Response::HTTP_OK);
-        }
-        return ApiResource::error($result, 'Failed to retrieve', Response::HTTP_BAD_REQUEST);
+        try {
+            $result = $this->service->all();
+            if ($result['flag']) {
+                $objectResource = $this->resource::collection($result['data']);
+                return ApiResource::ok($objectResource->toArray($request), 'Data retrieved successfully', Response::HTTP_OK);
+            }
+        } catch (\Exception $e) {
+            return ApiResource::message('Error: '.$e->getMessage(), Response::HTTP_BAD_REQUEST);
+        } 
     }
 
     private function handleRequest(string $requestAction = '') {

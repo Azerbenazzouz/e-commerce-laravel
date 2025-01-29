@@ -1,6 +1,8 @@
 <?php
 namespace App\Traits;
 
+use Carbon\Carbon;
+
 trait Query{
 
     public function scopekeyword($query, $keyword) {
@@ -30,7 +32,6 @@ trait Query{
         return $query;
     }
 
-
     private function handleOperator($query, $complexFilter){
         if(count($complexFilter)) {
             foreach($complexFilter as $field => $conditions) {
@@ -53,4 +54,41 @@ trait Query{
             }
         }
     }
+
+    private function handleDateOperator($query, $complexFilter){
+        if(count($complexFilter)) {
+            foreach($complexFilter as $field => $conditions) {
+                foreach ($conditions as $operator => $date) {
+                    switch ($operator) {
+                        case 'gt':
+                            $query->where($field, '>', Carbon::parse($date)->startOfDay());
+                            break;
+                        case 'gte':
+                            $query->where($field, '>=', Carbon::parse($date)->startOfDay());
+                            break;
+                        case 'lt':
+                            $query->where($field, '<', Carbon::parse($date)->startOfDay());
+                            break;
+                        case 'lte':
+                            $query->where($field, '<=', Carbon::parse($date)->startOfDay());
+                            break;
+                        case 'between':
+                            list($startDate, $endDate) = explode(',', $date);
+                            // dd($startDate, $endDate);
+                            $query->whereBetween($field, [
+                                Carbon::parse($startDate)->startOfDay(),
+                                Carbon::parse($endDate)->endOfDay()
+                            ]);
+                            break;
+                    }
+                }
+            }
+        }
+    }
+
+    public function scopeDateFilter($query, $dateFilter) {
+        $this->handleDateOperator($query, $dateFilter);
+        return $query;
+    }
+
 }

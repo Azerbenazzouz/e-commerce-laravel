@@ -34,10 +34,6 @@ abstract class BaseService {
         }
     }
 
-    private function keywordFilter(){
-        
-    }
-
     private function simpleFilter(Request $request ,array $filters = []){
         $simpleFilter = [];
         if(count($filters)) {
@@ -53,22 +49,21 @@ abstract class BaseService {
     private function complexFilter(Request $request, array $complexFilters = []){
         $conditions = [];
         foreach($complexFilters as $filter) {
-            $conditions[$filter] = $request->input($filter);
+            if($request->has($filter)){
+                $conditions[$filter] = $request->input($filter);
+            }
         }
         return $conditions;
     }
 
-    private function dateFilter(Request $request,array $dateFilters = []){
-        $dateFilter = [];
-        if(count($dateFilters)) {
-            foreach($dateFilters as $filter) {
-                if($request->has($filter)) {
-                    $dateFilter[$filter] = $request->input($filter);
-                }
+    private function dateFilter(Request $request, array $complexFilters = []) {
+        $conditions = [];
+        foreach ($complexFilters as $field) {
+            if ($request->has($field)) {
+                $conditions[$field] = $request->input($field);
             }
         }
-        return $dateFilter;
-
+        return $conditions;
     }
     private function specifications(Request $request){
         return [

@@ -51,6 +51,7 @@ class BaseRepositroy {
                 ->orderBy($specs['sortBy'][0], $specs['sortBy'][1])
                 ->simpleFilter($specs['simpleFilter'] ?? [])
                 ->complexFilter($specs['complexFilter'] ?? [])
+                ->dateFilter($specs['dateFilter'] ?? [])
                 ->paginate($specs['perpage']);
     }
 
