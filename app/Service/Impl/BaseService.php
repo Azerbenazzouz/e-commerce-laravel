@@ -21,6 +21,19 @@ abstract class BaseService implements BaseServiceInterface{
         $this->repository = $repository;
     }
 
+    public function show(int $id){
+        try {
+            return [
+                'data' => $this->repository->show($id),
+                'flag' => true
+            ];
+        } catch (\Exception $e) {
+            return [
+                'error' => $e->getMessage(),
+                'flag' => false
+            ];
+        }
+    }
     public function getList() {
         try {
             return [
@@ -34,7 +47,6 @@ abstract class BaseService implements BaseServiceInterface{
             ];
         }
     }
-
     private function buildFilter(Request $request, array $filters = []) {
         $conditions = [];
         if(count($filters)) {
@@ -61,25 +73,20 @@ abstract class BaseService implements BaseServiceInterface{
             ]
         ];
     }
-
     public function paginate(Request $request) {
         $specification = $this->specifications($request);
         return $this->repository->paginate($specification);
     }
-
     protected function setPayload(Request $request) {
         $this->payload = $request->only($this->requestPayload());
         return $this;
     }
-
     public function buildPayload() {
         return $this->payload;
     }
-
     protected function processPayload() {
         return $this;
     }
-
     public function save(Request $request, mixed $id = null): array {
         DB::beginTransaction();
         try {
@@ -103,7 +110,6 @@ abstract class BaseService implements BaseServiceInterface{
             ];
         }
     }
-
     public function delete(int $id) {
         DB::beginTransaction();
         try {      
@@ -121,7 +127,6 @@ abstract class BaseService implements BaseServiceInterface{
             ];
         }
     }
-
     public function deleteMultiple(array $ids) {
         DB::beginTransaction();
         try {      

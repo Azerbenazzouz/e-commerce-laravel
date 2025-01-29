@@ -44,6 +44,20 @@ abstract class BaseController extends Controller {
         } 
     }
 
+    public function show($id) {
+        try {
+            $result = $this->service->show($id);
+            if ($result['flag']) {
+                $objectResource = new $this->resource($result['data']);
+                return ApiResource::ok($objectResource->toArray(request()), 'Data retrieved successfully', Response::HTTP_OK);
+            } else {
+                return ApiResource::error($result, 'Data not found', Response::HTTP_NOT_FOUND);
+            }
+        } catch (\Exception $e) {
+            return ApiResource::message('Error: '.$e->getMessage(), Response::HTTP_BAD_REQUEST);
+        } 
+    }
+
     private function handleRequest(string $requestAction = '') {
         $storeRequest = app($requestAction);
         $storeRequest->validated();
@@ -82,7 +96,6 @@ abstract class BaseController extends Controller {
 
     public function deleteMultiple(Request $request){
         $this->handleRequest(requestAction: $this->getDeleteMultipleRequest());
-        // dd($request->ids);
         $result = $this->service->deleteMultiple($request->ids);
         if ($result['flag']) {
             return ApiResource::ok($result, 'Data deleted successfully', Response::HTTP_OK);

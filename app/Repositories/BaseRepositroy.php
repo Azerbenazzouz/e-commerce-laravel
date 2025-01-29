@@ -44,6 +44,12 @@ class BaseRepositroy {
         return $this->model->whereIn('id', $id)->delete();        
     }
 
+    public function show(int $id) {
+        $data = $this->model->find($id);
+        if ( $data == null ) throw new \Exception(message: 'Data not found');
+        return $data;
+    }
+
     public function all() {
         return $this->model->all();
     }

@@ -10,4 +10,5 @@ interface BaseServiceInterface {
     public function save(Request $request, $id = null);
     public function delete(int $id);
     public function deleteMultiple(array $ids);
+    public function show(int $id);
 }
