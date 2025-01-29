@@ -33,7 +33,7 @@ abstract class BaseController extends Controller {
 
     public function all(Request $request) {
         try {
-            $result = $this->service->all();
+            $result = $this->service->getList();
             if ($result['flag']) {
                 $objectResource = $this->resource::collection($result['data']);
                 return ApiResource::ok($objectResource->toArray($request), 'Data retrieved successfully', Response::HTTP_OK);

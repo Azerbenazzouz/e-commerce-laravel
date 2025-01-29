@@ -2,9 +2,10 @@
 namespace App\Service\Impl;
 
 use App\Repositories\RoleRepository;
+use App\Service\Interfaces\RoleServiceInterface;
 use Illuminate\Support\Str;
 
-class RoleService extends BaseService {
+class RoleService extends BaseService implements RoleServiceInterface{
     
     protected $roleRepo;
     protected $roleEntity;
@@ -48,7 +49,7 @@ class RoleService extends BaseService {
     }
 
     protected function generateSlug($name) {
-        $this->payload['slug'] = Str::slug($this->payload['name']);
+        $this->payload['slug'] = Str::slug($name);
         return $this;
     }
 

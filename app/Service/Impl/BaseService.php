@@ -1,10 +1,11 @@
 <?php 
 namespace App\Service\Impl;
 
+use App\Service\Interfaces\BaseServiceInterface;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
-abstract class BaseService {
+abstract class BaseService implements BaseServiceInterface{
     protected $repository;
     protected $payload;
     protected $operators = ['gt', 'gte', 'lt', 'lte'];
@@ -20,7 +21,7 @@ abstract class BaseService {
         $this->repository = $repository;
     }
 
-    public function all() {
+    public function getList() {
         try {
             return [
                 'data' => $this->repository->all(),
@@ -61,7 +62,7 @@ abstract class BaseService {
         ];
     }
 
-    public function paginate($request) {
+    public function paginate(Request $request) {
         $specification = $this->specifications($request);
         return $this->repository->paginate($specification);
     }
