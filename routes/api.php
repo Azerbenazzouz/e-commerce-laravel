@@ -18,6 +18,7 @@ Route::group(['prefix' => 'v1/auth'], function ($router) {
 Route::prefix('v1')->middleware(['jwt'])->group(function () {
     Route::group(          ['prefix' => 'roles'], function(){
         Route::get('all', [RoleController::class, 'all']);
+        Route::delete('delete-multiple', [RoleController::class, 'deleteMultiple']);
         Route::resource('', RoleController::class)->except(['create', 'edit']);
     });
 });

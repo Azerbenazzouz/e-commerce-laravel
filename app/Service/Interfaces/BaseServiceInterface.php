@@ -9,4 +9,5 @@ interface BaseServiceInterface {
     public function paginate(Request $request);
     public function save(Request $request, $id = null);
     public function delete(int $id);
+    public function deleteMultiple(array $ids);
 }

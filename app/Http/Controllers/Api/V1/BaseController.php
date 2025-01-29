@@ -13,6 +13,7 @@ abstract class BaseController extends Controller {
     abstract protected function getStoreRequest() : string;
     abstract protected function getUpdateRequest() : string;
     abstract protected function getDeleteRequest() : string;
+    abstract protected function getDeleteMultipleRequest() : string;
 
     public function __construct($service = null) {
         $this->service = $service;
@@ -73,6 +74,16 @@ abstract class BaseController extends Controller {
     public function destroy($id) {
         $this->handleRequest($this->getDeleteRequest());
         $result = $this->service->delete($id);
+        if ($result['flag']) {
+            return ApiResource::ok($result, 'Data deleted successfully', Response::HTTP_OK);
+        }
+        return ApiResource::error($result, 'Failed to delete', Response::HTTP_BAD_REQUEST);
+    }
+
+    public function deleteMultiple(Request $request){
+        $this->handleRequest(requestAction: $this->getDeleteMultipleRequest());
+        // dd($request->ids);
+        $result = $this->service->deleteMultiple($request->ids);
         if ($result['flag']) {
             return ApiResource::ok($result, 'Data deleted successfully', Response::HTTP_OK);
         }

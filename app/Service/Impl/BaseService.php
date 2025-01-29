@@ -121,4 +121,22 @@ abstract class BaseService implements BaseServiceInterface{
             ];
         }
     }
+
+    public function deleteMultiple(array $ids) {
+        DB::beginTransaction();
+        try {      
+            $this->repository->deleteWhereIn($ids);
+
+            DB::commit();
+            return [
+                'flag' => true
+            ];
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return [
+                'error' => $e->getMessage(),
+                'flag' => false
+            ];
+        }
+    }
 }

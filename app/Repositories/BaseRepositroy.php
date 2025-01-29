@@ -40,6 +40,10 @@ class BaseRepositroy {
             throw new \Exception('Failed to delete data with id ' . $id);
     }
 
+    public function deleteWhereIn(array $id = []) {
+        return $this->model->whereIn('id', $id)->delete();        
+    }
+
     public function all() {
         return $this->model->all();
     }
