@@ -34,33 +34,13 @@ abstract class BaseService {
         }
     }
 
-    private function simpleFilter(Request $request ,array $filters = []){
-        $simpleFilter = [];
+    private function buildFilter(Request $request, array $filters = []) {
+        $conditions = [];
         if(count($filters)) {
-            foreach($filters as $filter) {
-                if($request->has($filter)) {
-                    $simpleFilter[$filter] = $request->input($filter);
+            foreach ($filters as $filter) {
+                if ($request->has($filter)) {
+                    $conditions[$filter] = $request->input($filter);
                 }
-            }
-        }
-        return $simpleFilter;
-    }
-
-    private function complexFilter(Request $request, array $complexFilters = []){
-        $conditions = [];
-        foreach($complexFilters as $filter) {
-            if($request->has($filter)){
-                $conditions[$filter] = $request->input($filter);
-            }
-        }
-        return $conditions;
-    }
-
-    private function dateFilter(Request $request, array $complexFilters = []) {
-        $conditions = [];
-        foreach ($complexFilters as $field) {
-            if ($request->has($field)) {
-                $conditions[$field] = $request->input($field);
             }
         }
         return $conditions;
@@ -73,9 +53,11 @@ abstract class BaseService {
             ],
             'sortBy' => ($request->input('sortBy')) ? explode(',', $request->input('sortBy')) : ['id', 'desc'],
             'perpage' => ($request->input('perpage')) ? $request->input('perpage') : $this->getPerpage(),
-            'simpleFilter' => $this->simpleFilter($request, $this->getSimpleFilter()),
-            'complexFilter' => $this->complexFilter($request, $this->getComplexFilter()),
-            'dateFilter' => $this->dateFilter($request, $this->getDateFilter()),
+            'filters' => [
+                'simple' => $this->buildFilter($request, $this->getSimpleFilter()),
+                'complex' => $this->buildFilter($request, $this->getComplexFilter()),
+                'date' => $this->buildFilter($request, $this->getDateFilter())
+            ]
         ];
     }
 

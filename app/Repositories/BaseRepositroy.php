@@ -49,9 +49,9 @@ class BaseRepositroy {
         return $this->model
                 ->keyword($specs['keyword'] ?? [])
                 ->orderBy($specs['sortBy'][0], $specs['sortBy'][1])
-                ->simpleFilter($specs['simpleFilter'] ?? [])
-                ->complexFilter($specs['complexFilter'] ?? [])
-                ->dateFilter($specs['dateFilter'] ?? [])
+                ->simpleFilter($specs['filters']['simple'] ?? [])
+                ->complexFilter($specs['filters']['complex'] ?? [])
+                ->dateFilter($specs['filters']['date'] ?? [])
                 ->paginate($specs['perpage']);
     }
 
