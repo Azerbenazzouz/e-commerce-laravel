@@ -9,7 +9,7 @@
         "/api/v1/roles/all": {
             "get": {
                 "tags": [
-                    "Role"
+                    "Roles"
                 ],
                 "summary": "Get All Roles Record(s)",
                 "operationId": "getAllRoles",
@@ -54,7 +54,7 @@
         "/api/v1/roles": {
             "post": {
                 "tags": [
-                    "Role"
+                    "Roles"
                 ],
                 "summary": "Créer un nouveau rôle",
                 "description": "Créer un nouveau rôle",
@@ -87,16 +87,130 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/Role"
+                                    "properties": {
+                                        "status": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Rôle créé avec succès"
+                                        },
+                                        "data": {
+                                            "$ref": "#/components/schemas/Role"
+                                        },
+                                        "code": {
+                                            "type": "integer",
+                                            "example": 201
+                                        }
+                                    },
+                                    "type": "object"
                                 }
                             }
                         }
                     },
-                    "422": {
-                        "description": "Données non valides"
+                    "500": {
+                        "description": "Internal server error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Internal server error"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/roles/{id}": {
+            "get": {
+                "tags": [
+                    "Roles"
+                ],
+                "summary": "Afficher un rôle spécifique",
+                "description": "Afficher les détails d'un rôle spécifique",
+                "operationId": "showRole",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID du rôle",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Rôle récupéré avec succès",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Rôle récupéré avec succès"
+                                        },
+                                        "data": {
+                                            "$ref": "#/components/schemas/Role"
+                                        },
+                                        "code": {
+                                            "type": "integer",
+                                            "example": 200
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
                     },
-                    "401": {
-                        "description": "Non autorisé"
+                    "404": {
+                        "description": "Rôle non trouvé",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Rôle non trouvé"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Internal server error"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
                     }
                 },
                 "security": [
@@ -137,8 +251,8 @@
     },
     "tags": [
         {
-            "name": "Role",
-            "description": "Role API"
+            "name": "Roles",
+            "description": "Roles"
         }
     ]
 }

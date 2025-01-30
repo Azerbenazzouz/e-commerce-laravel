@@ -79,7 +79,7 @@ class RoleController extends BaseController {
      *    operationId="getAllRoles",
      *    summary="Get All Roles Record(s)",
      *    security={{"bearerAuth":{}}},
-     *    tags={"Role"},
+     *    tags={"Roles"},
      *    @OA\Response(
      *        response=200,
      *        description="List of roles retrieved successfully",
@@ -110,7 +110,7 @@ class RoleController extends BaseController {
      *     operationId="createRole",
      *     summary="Créer un nouveau rôle",
      *     security={{"bearerAuth":{}}},
-     *     tags={"Role"},
+     *     tags={"Roles"},
      *     @OA\RequestBody(
      *         required=true,
      *         @OA\JsonContent(
@@ -131,19 +131,75 @@ class RoleController extends BaseController {
      *     @OA\Response(
      *         response=201,
      *         description="Rôle créé avec succès",
-     *         @OA\JsonContent(ref="#/components/schemas/Role")
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(property="status", type="boolean", example=true),
+     *             @OA\Property(property="message", type="string", example="Rôle créé avec succès"),
+     *             @OA\Property(property="data", ref="#/components/schemas/Role"),
+     *             @OA\Property(property="code", type="integer", example=201)
+     *         )
      *     ),
      *     @OA\Response(
-     *         response=422,
-     *         description="Données non valides"
-     *     ),
-     *     @OA\Response(
-     *         response=401,
-     *         description="Non autorisé"
+     *         response=500,
+     *         description="Internal server error",
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(property="message", type="string", example="Internal server error")
+     *         )
      *     )
      * )
      */
     public function store(Request $request) {
         return parent::store($request);
+    }
+
+
+    /**
+     * Afficher les détails d'un rôle spécifique
+     *
+     * @OA\Get(
+     *     path="/api/v1/roles/{id}",
+     *     operationId="showRole",
+     *     summary="Afficher un rôle spécifique",
+     *     security={{"bearerAuth":{}}},
+     *     tags={"Roles"},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         description="ID du rôle",
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Rôle récupéré avec succès",
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(property="status", type="boolean", example=true),
+     *             @OA\Property(property="message", type="string", example="Rôle récupéré avec succès"),
+     *             @OA\Property(property="data", ref="#/components/schemas/Role"),
+     *             @OA\Property(property="code", type="integer", example=200)
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Rôle non trouvé",
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(property="message", type="string", example="Rôle non trouvé")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=500,
+     *         description="Internal server error",
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(property="message", type="string", example="Internal server error")
+     *         )
+     *     )
+     * )
+     */
+    public function show($id) {
+        return parent::show($id);
     }
 }
