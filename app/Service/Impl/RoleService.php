@@ -8,7 +8,6 @@ use Illuminate\Support\Str;
 class RoleService extends BaseService implements RoleServiceInterface{
     
     protected $roleRepo;
-    protected $roleEntity;
     protected $payload;
 
     public function __construct(
@@ -22,7 +21,7 @@ class RoleService extends BaseService implements RoleServiceInterface{
     }
 
     protected function getSearchFieald(): array {
-        return ['name',];
+        return ['name'];
     }
 
     protected function getPerpage() : int {

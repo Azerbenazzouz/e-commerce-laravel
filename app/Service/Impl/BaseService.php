@@ -6,21 +6,72 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 abstract class BaseService implements BaseServiceInterface{
+    /**
+     * $repository : mixed
+     * $repository elle contient le repository qui sera utilisé pour les opérations CRUD
+     */
     protected $repository;
+    /**
+     * $payload : array
+     * $payload elle contient les données envoyées par le client
+     */
     protected $payload;
+    /**
+     * $operators : array
+     * $operators elle contient les opérateurs qui sont utilisés pour les filtres complexes
+     */
     protected $operators = ['gt', 'gte', 'lt', 'lte'];
 
+    /**
+     * requestPayload() : array
+     * requestPayload elle retourne un tableau des champs qui sont envoyés par le client
+     */
     abstract protected function requestPayload(): array;
+    /**
+     * getSearchFieald() : array
+     * getSearchFieald elle retourne un tableau des champs qui sont utilisés pour la recherche
+     */
     abstract protected function getSearchFieald(): array;
+    /**
+     * getPerpage() : int
+     * getPerpage elle retourne le nombre des éléments par page
+     */
     abstract protected function getPerpage(): int;
+    /**
+     * getSimpleFilter() : array
+     * getSimpleFilter elle retourne un tableau des champs qui sont utilisés pour les filtres simples
+     * exemple : ?name=azer
+     */
     abstract protected function getSimpleFilter(): array;
+    /**
+     * getComplexFilter() : array
+     * getComplexFilter elle retourne un tableau des champs qui sont utilisés pour les filtres complexes
+     * exemple : ?age[gt]=18
+     */
     abstract protected function getComplexFilter(): array;
+    /**
+     * getDateFilter() : array
+     * getDateFilter elle retourne un tableau des champs qui sont utilisés pour les filtres de date
+     * exemple : ?created_at=2021-01-01
+     */
     abstract protected function getDateFilter(): array;
 
+    /**
+     * __construct($repository)
+     * __construct elle permet d'initialiser le repository
+     * @param mixed $repository
+     */
     public function __construct($repository){
         $this->repository = $repository;
     }
 
+    /**
+     * show(int $id) : array
+     * show elle retourne un tableau qui contient les données d'un élément
+     * @param int $id
+     * @return array
+     * @throws \Exception
+     */
     public function show(int $id){
         try {
             return [
@@ -34,6 +85,13 @@ abstract class BaseService implements BaseServiceInterface{
             ];
         }
     }
+
+    /**
+     * getList() : array
+     * getList elle retourne un tableau qui contient la liste des éléments
+     * @return array
+     * @throws \Exception
+     */
     public function getList() {
         try {
             return [
@@ -47,6 +105,14 @@ abstract class BaseService implements BaseServiceInterface{
             ];
         }
     }
+
+    /**
+     * paginate(Request $request) : array
+     * paginate elle retourne un tableau qui contient la liste des éléments paginée
+     * @param Request $request
+     * @return array
+     * @throws \Exception
+     */
     private function buildFilter(Request $request, array $filters = []) {
         $conditions = [];
         if(count($filters)) {
@@ -58,6 +124,13 @@ abstract class BaseService implements BaseServiceInterface{
         }
         return $conditions;
     }
+
+    /**
+     * specifications(Request $request) : array
+     * specifications elle retourne un tableau qui contient les spécifications pour la pagination
+     * @param Request $request
+     * @return array
+     */
     private function specifications(Request $request){
         return [
             'keyword' => [
@@ -73,20 +146,56 @@ abstract class BaseService implements BaseServiceInterface{
             ]
         ];
     }
+
+    /**
+     * paginate(Request $request) : array
+     * paginate elle retourne un tableau qui contient la liste des éléments paginée
+     * @param Request $request
+     * @return array
+     * @throws \Exception
+     */
     public function paginate(Request $request) {
         $specification = $this->specifications($request);
         return $this->repository->paginate($specification);
     }
+
+    /**
+     * setPayload(Request $request) : BaseService
+     * setPayload elle permet de récupérer les données envoyées par le client
+     * @param Request $request
+     * @return BaseService
+     */
     protected function setPayload(Request $request) {
         $this->payload = $request->only($this->requestPayload());
         return $this;
     }
+
+    /**
+     * buildPayload() : array
+     * buildPayload elle retourne les données qui seront enregistrées
+     * @return array
+     */
     public function buildPayload() {
         return $this->payload;
     }
+
+    /**
+     * processPayload() : BaseService
+     * processPayload elle permet de traiter les données avant de les enregistrer
+     * @return BaseService
+     */
     protected function processPayload() {
         return $this;
     }
+
+    /**
+     * save(Request $request, mixed $id = null) : array
+     * save elle permet d'enregistrer ou de mettre à jour un élément
+     * @param Request $request
+     * @param mixed $id
+     * @return array
+     * @throws \Exception
+     */
     public function save(Request $request, mixed $id = null): array {
         DB::beginTransaction();
         try {
@@ -94,7 +203,6 @@ abstract class BaseService implements BaseServiceInterface{
                 ->setPayload($request)
                 ->processPayload()
                 ->buildPayload();
-            
             $result = $this->repository->save($payload, $id);
 
             DB::commit();
@@ -110,6 +218,14 @@ abstract class BaseService implements BaseServiceInterface{
             ];
         }
     }
+
+    /**
+     * delete(int $id) : array
+     * delete elle permet de supprimer un élément
+     * @param int $id
+     * @return array
+     * @throws \Exception
+     */
     public function delete(int $id) {
         DB::beginTransaction();
         try {      
@@ -127,6 +243,14 @@ abstract class BaseService implements BaseServiceInterface{
             ];
         }
     }
+
+    /**
+     * deleteMultiple(array $ids) : array
+     * deleteMultiple elle permet de supprimer plusieurs éléments
+     * @param array $ids
+     * @return array
+     * @throws \Exception
+     */
     public function deleteMultiple(array $ids) {
         DB::beginTransaction();
         try {      
