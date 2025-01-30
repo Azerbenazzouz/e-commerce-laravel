@@ -7,6 +7,7 @@ namespace App\Models;
 use App\Traits\Query;
 use Tymon\JWTAuth\Contracts\JWTSubject;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
@@ -72,5 +73,9 @@ class User extends Authenticatable implements JWTSubject
     public function getJWTCustomClaims()
     {
         return [];
+    }
+
+    public function roles() : BelongsToMany {
+        return $this->belongsToMany(Role::class, 'role_user')->withTimestamps();
     }
 }
