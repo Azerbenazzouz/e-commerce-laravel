@@ -1,5 +1,5 @@
 <?php
-namespace App\Services\Impl;
+namespace App\Service\Impl;
 
 class AuthService {
     //

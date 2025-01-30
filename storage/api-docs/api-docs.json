@@ -1,0 +1,144 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "Laravel 11 Api: Ecommerce Project Documentation",
+        "description": "Role API Documentation",
+        "version": "1.0.0"
+    },
+    "paths": {
+        "/api/v1/roles/all": {
+            "get": {
+                "tags": [
+                    "Role"
+                ],
+                "summary": "Get All Roles Record(s)",
+                "operationId": "getAllRoles",
+                "responses": {
+                    "200": {
+                        "description": "List of roles retrieved successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/Role"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Internal server error"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/roles": {
+            "post": {
+                "tags": [
+                    "Role"
+                ],
+                "summary": "Créer un nouveau rôle",
+                "description": "Créer un nouveau rôle",
+                "operationId": "createRole",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "name": {
+                                        "description": "Nom du rôle",
+                                        "type": "string",
+                                        "example": "Admin"
+                                    },
+                                    "publish": {
+                                        "description": "Publier le rôle",
+                                        "type": "integer",
+                                        "example": 2
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Rôle créé avec succès",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Role"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Données non valides"
+                    },
+                    "401": {
+                        "description": "Non autorisé"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "Role": {
+                "properties": {
+                    "id": {
+                        "description": "Role id",
+                        "type": "integer"
+                    },
+                    "name": {
+                        "description": "Role name",
+                        "type": "string"
+                    },
+                    "publish": {
+                        "description": "Role Publish",
+                        "type": "integer"
+                    }
+                },
+                "type": "object"
+            }
+        },
+        "securitySchemes": {
+            "bearerAuth": {
+                "type": "http",
+                "bearerFormat": "JWT",
+                "scheme": "bearer"
+            }
+        }
+    },
+    "tags": [
+        {
+            "name": "Role",
+            "description": "Role API"
+        }
+    ]
+}
