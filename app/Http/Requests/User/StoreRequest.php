@@ -11,14 +11,15 @@ class StoreRequest extends BaseRequest {
         return true;
     }
 
-    public function rules(): array
-    {
+    public function rules(): array {
         return [
             'name' => 'required',
             'password' => 'required|min:6|max:24',
             'email' => 'required|email|unique:users,email',
             'birthday' => 'required|date|before:today',
             'publish' => 'gt:0',
+            'roles' => 'required|array',
+            'roles.*' => 'required|exists:roles,id', // Validate each item in the array (roles ID exists in the roles table)
         ];
     }
 }
