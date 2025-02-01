@@ -51,10 +51,10 @@ class PermissionService extends BaseService implements PermissionServiceInterfac
             }
             $method = [
                 'all',
-                'paginate',
-                'create',
+                'index',
+                'store',
                 'update',
-                'delete',
+                'destroy',
                 'deleteMultiple',
                 'show'
             ];
