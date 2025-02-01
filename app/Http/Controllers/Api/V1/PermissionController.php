@@ -2,18 +2,19 @@
 
 namespace App\Http\Controllers\Api\V1;
 
-use App\Http\Requests\Permsission\DeleteMultipleRequest;
-use App\Http\Requests\Permsission\DeleteRequest;
-use App\Http\Requests\Permsission\StoreRequest;
-use App\Http\Requests\Permsission\UpdateRequest;
-use App\Http\Resources\PermsissionResource;
-use App\Service\Impl\PermsissionService;
+use App\Http\Requests\Permission\DeleteMultipleRequest;
+use App\Http\Requests\Permission\DeleteRequest;
+use App\Http\Requests\Permission\StoreRequest;
+use App\Http\Requests\Permission\UpdateRequest;
+use App\Http\Resources\PermissionResource;
+use App\Service\Interfaces\PermissionServiceInterface as PermissionService;
 
-class PermsissionController extends BaseController{
+
+class PermissionController extends BaseController{
     protected $userService;
-    protected $resource = PermsissionResource::class;
+    protected $resource = PermissionResource::class;
     public function __construct(
-        PermsissionService $userService
+        PermissionService $userService
     ) {
         parent::__construct($userService);
     }

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Requests\Permsission;
+namespace App\Http\Requests\Permission;
 
 use App\Http\Requests\BaseRequest;
 
@@ -13,8 +13,8 @@ class StoreRequest extends BaseRequest {
 
     public function rules(): array {
         return [
-            'name' => 'required',
-            'publish' => 'gt:0'
+            'name' => 'required|regex:/^[a-z]+:[a-zA-Z]+$/|unique:permissions',
+            'publish' => 'required|gt:0'
         ];
     }
 }

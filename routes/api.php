@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\V1\AuthController;
+use App\Http\Controllers\Api\V1\PermissionController;
 use App\Http\Controllers\Api\V1\RoleController;
 use App\Http\Controllers\Api\V1\UserController;
 use Illuminate\Support\Facades\Route;
@@ -33,10 +34,10 @@ Route::prefix('v1')->middleware(['jwt'])->group(function () {
     /* ----------- */
 
     /* Permission Route */
-    Route::group(['prefix' => 'permsissions'], function(){
-        Route::get('all', [UserController::class, 'all']);
-        Route::delete('delete-multiple', [UserController::class, 'deleteMultiple']);
+    Route::group(['prefix' => 'permissions'], function(){
+        Route::get('all', [PermissionController::class, 'all']);
+        Route::delete('delete-multiple', [PermissionController::class, 'deleteMultiple']);
     });
-    Route::resource('permsissions', UserController::class)->except(['create', 'edit']);
+    Route::resource('permissions', PermissionController::class)->except(['create', 'edit']);
     /* ----------- */
 });

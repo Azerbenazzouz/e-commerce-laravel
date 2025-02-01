@@ -1,16 +1,16 @@
 <?php
 namespace App\Service\Impl;
 
-use App\Repositories\PermsissionRepository;
-use App\Service\Interfaces\PermsissionServiceInterface;
+use App\Repositories\PermissionRepository;
+use App\Service\Interfaces\PermissionServiceInterface;
 
-class PermsissionService extends BaseService implements PermsissionServiceInterface{
+class PermsissionService extends BaseService implements PermissionServiceInterface{
     
     protected $permsissionRepo;
     protected $payload;
 
     public function __construct(
-        PermsissionRepository $permsissionRepo
+        PermissionRepository $permsissionRepo
     ) {
         parent::__construct($permsissionRepo);        
     }
