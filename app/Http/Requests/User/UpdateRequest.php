@@ -25,7 +25,9 @@ class UpdateRequest extends BaseRequest {
             'birthday' => 'nullable|date|before:today',
             'password' => 'string|min:6|max:24',
             'email' => 'nullable|email|unique:users,email,'.$this->route('user').',id',
-            'publish' => 'gt:0'
+            'publish' => 'gt:0',
+            'roles' => 'array',
+            'roles.*' => 'required|exists:roles,id', // Validate each item in the array (roles ID exists in the roles table)
         ];
     }
 

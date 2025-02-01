@@ -2,6 +2,7 @@
 namespace App\Service\Impl;
 
 use App\Service\Interfaces\BaseServiceInterface;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -55,6 +56,7 @@ abstract class BaseService implements BaseServiceInterface{
      * exemple : ?created_at=2021-01-01
      */
     abstract protected function getDateFilter(): array;
+    
 
     /**
      * __construct($repository)
@@ -196,6 +198,30 @@ abstract class BaseService implements BaseServiceInterface{
      * @return array
      * @throws \Exception
      */
+    // public function save(Request $request, mixed $id = null): array {
+    //     DB::beginTransaction();
+    //     try {
+    //         $payload = $this
+    //             ->setPayload($request)
+    //             ->processPayload()
+    //             ->buildPayload();
+            
+    //         $model = $this->repository->save($payload, $id);
+    //         $this->handleManyToManyRelation($model, $payload);
+    //         DB::commit();
+    //         return [
+    //             'data' => $model,
+    //             'flag' => true
+    //         ];
+    //     } catch (\Exception $e) {
+    //         DB::rollBack();
+    //         return [
+    //             'error' => $e->getMessage(),
+    //             'flag' => false
+    //         ];
+    //     }
+    // }
+
     public function save(Request $request, mixed $id = null): array {
         DB::beginTransaction();
         try {
@@ -203,11 +229,17 @@ abstract class BaseService implements BaseServiceInterface{
                 ->setPayload($request)
                 ->processPayload()
                 ->buildPayload();
-            $result = $this->repository->save($payload, $id);
-
+    
+            $extract = $this->extractManyToManyRelation($payload);
+            $payload = $extract['payload'];
+            $relationsPayload = $extract['relations'];
+            
+            $model = $this->repository->save($payload, $id);
+            $this->handleManyToManyRelation($model, $relationsPayload);
+    
             DB::commit();
             return [
-                'data' => $result,
+                'data' => $model,
                 'flag' => true
             ];
         } catch (\Exception $e) {
@@ -266,6 +298,37 @@ abstract class BaseService implements BaseServiceInterface{
                 'error' => $e->getMessage(),
                 'flag' => false
             ];
+        }
+    }
+    /**
+     * getManyToManyRelationship() : array
+     * getManyToManyRelationship elle retourne un tableau des relations many to many
+     */
+    protected function getManyToManyRelationship() : array {
+        return [];
+    }
+
+    private function extractManyToManyRelation(array $payload = []) : array{
+        // Extract roles and other many-to-many relations from the payload
+        $relations = $this->getManyToManyRelationship();
+        $relationsPayload = [];
+
+        foreach ($relations as $relation) {
+            if (isset($payload[$relation])) {
+                $relationsPayload[$relation] = $payload[$relation];
+                unset($payload[$relation]);
+            }
+        }
+        return [
+            'payload' => $payload,
+            'relations' => $relationsPayload
+        ];
+    }
+
+    private function handleManyToManyRelation(Model $model, array $relationsPayload = []) {
+        // Sync the many-to-many relationships
+        foreach ($relationsPayload as $relation => $relationData) {
+            $model->$relation()->sync($relationData);
         }
     }
 }

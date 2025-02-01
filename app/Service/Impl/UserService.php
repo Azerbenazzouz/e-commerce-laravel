@@ -26,7 +26,7 @@ class UserService extends BaseService implements UserServiceInterface {
     }
 
     protected function requestPayload(): array {
-        return ['name', 'email', 'password' ,'publish', 'birthday'];
+        return ['name', 'email', 'password' ,'publish', 'birthday', 'roles'];
     }
 
     protected function getSimpleFilter() : array {
@@ -50,6 +50,10 @@ class UserService extends BaseService implements UserServiceInterface {
             $this->payload['age'] = Carbon::parse($this->payload['birthday'])->age;
         }
         return $this;
+    }
+
+    protected function getManyToManyRelationship() : array {
+        return ['roles'];
     }
 
 }
