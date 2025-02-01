@@ -70,9 +70,14 @@ class User extends Authenticatable implements JWTSubject
      *
      * @return array
      */
-    public function getJWTCustomClaims()
-    {
-        return [];
+    public function getJWTCustomClaims() {
+        $permissions = $this->roles->flatMap(function($role){
+            return $role->permissions->pluck('name');
+        })->unique()->values()->toArray();
+        return [
+            'permissions' => $permissions,
+            'roles' => $this->roles->pluck('name')->toArray(),
+        ];
     }
 
     public function roles() : BelongsToMany {
