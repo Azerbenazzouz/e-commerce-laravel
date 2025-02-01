@@ -31,4 +31,12 @@ Route::prefix('v1')->middleware(['jwt'])->group(function () {
     });
     Route::resource('users', UserController::class)->except(['create', 'edit']);
     /* ----------- */
+
+    /* Permission Route */
+    Route::group(['prefix' => 'permsissions'], function(){
+        Route::get('all', [UserController::class, 'all']);
+        Route::delete('delete-multiple', [UserController::class, 'deleteMultiple']);
+    });
+    Route::resource('permsissions', UserController::class)->except(['create', 'edit']);
+    /* ----------- */
 });

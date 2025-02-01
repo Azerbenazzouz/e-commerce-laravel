@@ -21,24 +21,14 @@ class DeleteMultipleRequest extends BaseRequest {
     public function rules(): array
     {
         return [
-            'ids' => 'required|array',
+            'ids' => 'required|array|exists:users,id',
         ];
     }
 
-    public function withValidator($validator) {
-        $validator->after(function ($validator) {
-            $ids = $this->input('ids');
-            if (!empty($ids)) {
-                foreach ($ids as $id) {
-                    if (!is_numeric($id)) {
-                        $validator->errors()->add('user', 'User id must be numeric');
-                    }
-                    $user = $this->userRepository->findByld($id);
-                    if (!$user) {
-                        $validator->errors()->add('user', 'User not found with id: '.$id);
-                    }
-                }
-            }
-        });
+    protected function prepareForValidation() {
+        $this->merge([
+            'id' => explode(',', $this->route('users'))
+        ]);
     }
+
 }
