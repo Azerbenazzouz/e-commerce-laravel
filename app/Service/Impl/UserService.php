@@ -4,7 +4,6 @@ namespace App\Service\Impl;
 use App\Repositories\UserRepository;
 use App\Service\Interfaces\UserServiceInterface;
 use Carbon\Carbon;
-use Illuminate\Http\Request;
 
 class UserService extends BaseService implements UserServiceInterface {
     
@@ -17,7 +16,7 @@ class UserService extends BaseService implements UserServiceInterface {
         parent::__construct($userRepo);
     }
 
-    protected function getSearchFieald(): array {
+    protected function getSearchField(): array {
         return ['name', 'email'];
     }
 

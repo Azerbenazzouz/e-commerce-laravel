@@ -3,7 +3,6 @@ namespace App\Service\Impl;
 
 use App\Repositories\RoleRepository;
 use App\Service\Interfaces\RoleServiceInterface;
-use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 
 class RoleService extends BaseService implements RoleServiceInterface{
@@ -21,7 +20,7 @@ class RoleService extends BaseService implements RoleServiceInterface{
         return ['name', 'publish', 'permissions'];
     }
 
-    protected function getSearchFieald(): array {
+    protected function getSearchField(): array {
         return ['name'];
     }
 

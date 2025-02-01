@@ -32,7 +32,7 @@ abstract class BaseService implements BaseServiceInterface{
      * getSearchFieald() : array
      * getSearchFieald elle retourne un tableau des champs qui sont utilisés pour la recherche
      */
-    abstract protected function getSearchFieald(): array;
+    abstract protected function getSearchField(): array;
     /**
      * getPerpage() : int
      * getPerpage elle retourne le nombre des éléments par page
@@ -137,7 +137,7 @@ abstract class BaseService implements BaseServiceInterface{
         return [
             'keyword' => [
                 'q' => $request->input('keyword'),
-                'field' => $this->getSearchFieald()
+                'field' => $this->getSearchField()
             ],
             'sortBy' => ($request->input('sortBy')) ? explode(',', $request->input('sortBy')) : ['id', 'desc'],
             'perpage' => ($request->input('perpage')) ? $request->input('perpage') : $this->getPerpage(),

@@ -58,7 +58,7 @@ abstract class BaseController extends Controller {
         } 
     }
 
-    private function handleRequest(string $requestAction = '') {
+    protected function handleRequest(string $requestAction = '') {
         $storeRequest = app($requestAction);
         $storeRequest->validated();
     }

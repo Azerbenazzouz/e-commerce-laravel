@@ -2,7 +2,7 @@
 
 namespace App\Providers;
 
-use App\Service\Impl\PermsissionService;
+use App\Service\Impl\PermissionService;
 use App\Service\Impl\RoleService;
 use App\Service\Impl\UserService;
 use App\Service\Interfaces\PermissionServiceInterface;
@@ -21,7 +21,7 @@ class AppServiceProvider extends ServiceProvider
         $this->app
             ->bind(UserServiceInterface::class, UserService::class);
         $this->app
-            ->bind(PermissionServiceInterface::class, PermsissionService::class);
+            ->bind(PermissionServiceInterface::class, PermissionService::class);
     }
 
     /**

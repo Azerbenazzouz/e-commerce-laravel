@@ -1,6 +1,7 @@
 <?php
 namespace App\Repositories;
 use Illuminate\Database\Eloquent\Model;
+use phpDocumentor\Reflection\Types\Boolean;
 
 class BaseRepositroy {
     private Model $model;
@@ -63,6 +64,10 @@ class BaseRepositroy {
                 ->complexFilter($specs['filters']['complex'] ?? [])
                 ->dateFilter($specs['filters']['date'] ?? [])
                 ->paginate($specs['perpage']);
+    }
+
+    public function checkExist(string $field = '', mixed $value = null) : bool {
+        return $this->model->where($field, $value)->first() != null;
     }
 
 }

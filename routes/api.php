@@ -37,6 +37,7 @@ Route::prefix('v1')->middleware(['jwt'])->group(function () {
     Route::group(['prefix' => 'permissions'], function(){
         Route::get('all', [PermissionController::class, 'all']);
         Route::delete('delete-multiple', [PermissionController::class, 'deleteMultiple']);
+        Route::post('create-module-permission', [PermissionController::class, 'createModulePermission']);
     });
     Route::resource('permissions', PermissionController::class)->except(['create', 'edit']);
     /* ----------- */
