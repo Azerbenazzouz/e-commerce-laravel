@@ -198,30 +198,6 @@ abstract class BaseService implements BaseServiceInterface{
      * @return array
      * @throws \Exception
      */
-    // public function save(Request $request, mixed $id = null): array {
-    //     DB::beginTransaction();
-    //     try {
-    //         $payload = $this
-    //             ->setPayload($request)
-    //             ->processPayload()
-    //             ->buildPayload();
-            
-    //         $model = $this->repository->save($payload, $id);
-    //         $this->handleManyToManyRelation($model, $payload);
-    //         DB::commit();
-    //         return [
-    //             'data' => $model,
-    //             'flag' => true
-    //         ];
-    //     } catch (\Exception $e) {
-    //         DB::rollBack();
-    //         return [
-    //             'error' => $e->getMessage(),
-    //             'flag' => false
-    //         ];
-    //     }
-    // }
-
     public function save(Request $request, mixed $id = null): array {
         DB::beginTransaction();
         try {

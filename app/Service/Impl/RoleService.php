@@ -3,6 +3,7 @@ namespace App\Service\Impl;
 
 use App\Repositories\RoleRepository;
 use App\Service\Interfaces\RoleServiceInterface;
+use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 
 class RoleService extends BaseService implements RoleServiceInterface{
@@ -17,7 +18,7 @@ class RoleService extends BaseService implements RoleServiceInterface{
     }
 
     protected function requestPayload(): array {
-        return ['name', 'publish'];
+        return ['name', 'publish', 'permissions'];
     }
 
     protected function getSearchFieald(): array {
@@ -43,11 +44,14 @@ class RoleService extends BaseService implements RoleServiceInterface{
 
     protected function processPayload() {
         return $this
-            ->generateSlug($this->payload['name'])
+            ->generateSlug($this->payload['name'] ?? '')
             ->generateSomething();
     }
 
     protected function generateSlug($name) {
+        if (empty($name)) {
+            return $this;
+        }
         $this->payload['slug'] = Str::slug($name);
         return $this;
     }
@@ -56,4 +60,15 @@ class RoleService extends BaseService implements RoleServiceInterface{
         // do something
         return $this;
     }
+
+    protected function getManyToManyRelationship() : array {
+        return ['permissions'];
+    }
+
+    // public function save(Request $request, mixed $id = null): array {
+    //     $this->payload = $request->only($this->requestPayload());
+    //     $this->processPayload();
+    //     dd($this->payload);
+    //     return parent::save($request, $id);
+    // }
 }

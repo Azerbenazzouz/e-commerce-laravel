@@ -14,8 +14,10 @@ class StoreRequest extends BaseRequest {
     public function rules(): array
     {
         return [
-            'name' => 'required',
-            'publish' => 'gt:0',
+            'name' => 'required|unique:roles,name',
+            'publish' => 'required|gt:0',
+            'permissions' => 'required|array', // Must be an array
+            'permissions.*' => 'required|exists:permissions,id', // Validate each item in the array (roles ID exists in the roles table)
         ];
     }
 }
