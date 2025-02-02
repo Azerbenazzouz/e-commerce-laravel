@@ -64,10 +64,4 @@ class RoleService extends BaseService implements RoleServiceInterface{
         return ['permissions'];
     }
 
-    // public function save(Request $request, mixed $id = null): array {
-    //     $this->payload = $request->only($this->requestPayload());
-    //     $this->processPayload();
-    //     dd($this->payload);
-    //     return parent::save($request, $id);
-    // }
 }

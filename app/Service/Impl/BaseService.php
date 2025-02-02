@@ -5,6 +5,7 @@ use App\Service\Interfaces\BaseServiceInterface;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Auth\Access\AuthorizationException;
 
 abstract class BaseService implements BaseServiceInterface{
     /**
@@ -22,6 +23,11 @@ abstract class BaseService implements BaseServiceInterface{
      * $operators elle contient les opérateurs qui sont utilisés pour les filtres complexes
      */
     protected $operators = ['gt', 'gte', 'lt', 'lte'];
+    /**
+     * $auth : mixed
+     * $auth elle contient les informations de l'utilisateur authentifié
+     */
+    protected $auth;
 
     /**
      * requestPayload() : array
@@ -58,13 +64,12 @@ abstract class BaseService implements BaseServiceInterface{
     abstract protected function getDateFilter(): array;
     
 
-    /**
-     * __construct($repository)
-     * __construct elle permet d'initialiser le repository
-     * @param mixed $repository
-     */
     public function __construct($repository){
         $this->repository = $repository;
+        /**
+         * @var \Tymon\JWTAuth\JWTGuard
+         */
+        $this->auth = auth('api');
     }
 
     /**
@@ -145,6 +150,10 @@ abstract class BaseService implements BaseServiceInterface{
                 'simple' => $this->buildFilter($request, $this->getSimpleFilter()),
                 'complex' => $this->buildFilter($request, $this->getComplexFilter()),
                 'date' => $this->buildFilter($request, $this->getDateFilter())
+            ],
+            'scope' => [
+                'view' => $request->input('viewScope'),
+                'action' => $request->input('actionScope')
             ]
         ];
     }
@@ -156,9 +165,19 @@ abstract class BaseService implements BaseServiceInterface{
      * @return array
      * @throws \Exception
      */
-    public function paginate(Request $request) {
+    public function paginate(Request $request, string $recordType = 'paginate') {
         $specification = $this->specifications($request);
-        return $this->repository->paginate($specification);
+        try {
+            return [
+                'data' => $this->repository->paginate($specification, $recordType),
+                'flag' => true
+            ];
+        } catch (\Exception $e) {
+            return [
+                'error' => $e->getMessage(),
+                'flag' => false
+            ];
+        }
     }
 
     /**
@@ -190,6 +209,12 @@ abstract class BaseService implements BaseServiceInterface{
         return $this;
     }
 
+    protected function setUserId() {
+        // $id = ;
+        $this->payload['user_id'] = $this->auth->user()->id;
+        return $this;
+    }
+
     /**
      * save(Request $request, mixed $id = null) : array
      * save elle permet d'enregistrer ou de mettre à jour un élément
@@ -198,14 +223,18 @@ abstract class BaseService implements BaseServiceInterface{
      * @return array
      * @throws \Exception
      */
-    public function save(Request $request, mixed $id = null): array {
+    public function save(Request $request, mixed $id = null, $method = 'create'): array {
         DB::beginTransaction();
         try {
+
+            if($method == 'update') {
+                $this->validatePermission($request, $id);
+            }
+
             $payload = $this
                 ->setPayload($request)
                 ->processPayload()
                 ->buildPayload();
-    
             $extract = $this->extractManyToManyRelation($payload);
             $payload = $extract['payload'];
             $relationsPayload = $extract['relations'];
@@ -218,11 +247,19 @@ abstract class BaseService implements BaseServiceInterface{
                 'data' => $model,
                 'flag' => true
             ];
+        } catch(AuthorizationException $e) {
+            DB::rollBack();
+            return [
+                'error' => $e->getMessage(),
+                'flag' => false,
+                'code' => 403
+            ];
         } catch (\Exception $e) {
             DB::rollBack();
             return [
                 'error' => $e->getMessage(),
-                'flag' => false
+                'flag' => false,
+                'code' => 400
             ];
         }
     }
@@ -234,20 +271,29 @@ abstract class BaseService implements BaseServiceInterface{
      * @return array
      * @throws \Exception
      */
-    public function delete(int $id) {
+    public function delete(Request $request ,int $id) {
         DB::beginTransaction();
         try {      
+            $this->validatePermission($request, $id);
             $this->repository->delete($id);
 
             DB::commit();
             return [
                 'flag' => true
             ];
+        } catch(AuthorizationException $e) {
+            DB::rollBack();
+            return [
+                'error' => $e->getMessage(),
+                'flag' => false,
+                'code' => 403
+            ];
         } catch (\Exception $e) {
             DB::rollBack();
             return [
                 'error' => $e->getMessage(),
-                'flag' => false
+                'flag' => false,
+                'code' => 400
             ];
         }
     }
@@ -276,6 +322,7 @@ abstract class BaseService implements BaseServiceInterface{
             ];
         }
     }
+
     /**
      * getManyToManyRelationship() : array
      * getManyToManyRelationship elle retourne un tableau des relations many to many
@@ -284,6 +331,12 @@ abstract class BaseService implements BaseServiceInterface{
         return [];
     }
 
+    /**
+     * extractManyToManyRelation(array $payload = []) : array
+     * extractManyToManyRelation elle permet d'extraire les relations many to many
+     * @param array $payload
+     * @return array
+     */
     private function extractManyToManyRelation(array $payload = []) : array{
         // Extract roles and other many-to-many relations from the payload
         $relations = $this->getManyToManyRelationship();
@@ -301,10 +354,28 @@ abstract class BaseService implements BaseServiceInterface{
         ];
     }
 
+    /**
+     * handleManyToManyRelation(Model $model, array $relationsPayload = []) : void
+     * handleManyToManyRelation elle permet de gérer les relations many to many
+     * @param Model $model
+     * @param array $relationsPayload
+     */
     private function handleManyToManyRelation(Model $model, array $relationsPayload = []) {
         // Sync the many-to-many relationships
         foreach ($relationsPayload as $relation => $relationData) {
             $model->$relation()->sync($relationData);
+        }
+    }
+
+    private function validatePermission(Request $request, $id) {
+        $action = $request->input('actionScope') === 'all';
+
+        if(!$action) {
+            $model = $this->repository->findByld($id);
+            
+            if(!isset($model->user_id) && $model->user_id != $this->auth->user()->id) {
+                throw new AuthorizationException('Permission denied');
+            }
         }
     }
 }

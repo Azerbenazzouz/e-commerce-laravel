@@ -42,6 +42,10 @@ class PermissionService extends BaseService implements PermissionServiceInterfac
         return ['created_at'];
     }
 
+    protected function processPayload() {
+        return $this->setUserId();
+    }
+
     public function createModulePermission(Request $request): array {
         DB::beginTransaction();
         try {

@@ -55,15 +55,18 @@ class BaseRepositroy {
         return $this->model->all();
     }
 
-    public function paginate(array $specs = []) {
-        // dd($specs);
+    public function paginate(array $specs = [], string $recordType = 'paginate') {
         return $this->model
                 ->keyword($specs['keyword'] ?? [])
                 ->orderBy($specs['sortBy'][0], $specs['sortBy'][1])
                 ->simpleFilter($specs['filters']['simple'] ?? [])
                 ->complexFilter($specs['filters']['complex'] ?? [])
                 ->dateFilter($specs['filters']['date'] ?? [])
-                ->paginate($specs['perpage']);
+                ->permissionFilter($specs['scope']?? [])
+                ->when($recordType === 'paginate', 
+                    fn($q) => $q->paginate($specs['perpage']),
+                    fn($q) => $q->get()
+                );
     }
 
     public function checkExist(string $field = '', mixed $value = null) : bool {

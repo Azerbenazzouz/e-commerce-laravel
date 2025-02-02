@@ -23,7 +23,8 @@ abstract class BaseController extends Controller {
     public function index(Request $request) {
         try {
             $data = $this->service->paginate($request);
-            $data->through(function($item){
+
+            $data['data']->through(function($item){
                 return new $this->resource($item);
             });
             return ApiResource::ok($data, 'Data retrieved successfully', Response::HTTP_OK);
@@ -34,7 +35,7 @@ abstract class BaseController extends Controller {
 
     public function all(Request $request) {
         try {
-            $result = $this->service->getList();
+            $result = $this->service->paginate($request, 'list');
             if ($result['flag']) {
                 $objectResource = $this->resource::collection($result['data']);
                 return ApiResource::ok($objectResource->toArray($request), 'Data retrieved successfully', Response::HTTP_OK);
@@ -54,7 +55,7 @@ abstract class BaseController extends Controller {
                 return ApiResource::error($result, 'Data not found', Response::HTTP_NOT_FOUND);
             }
         } catch (\Exception $e) {
-            return ApiResource::message('Error: '.$e->getMessage(), Response::HTTP_BAD_REQUEST);
+            return ApiResource::message('Error: '.$e->getMessage(), $result['code']);
         } 
     }
 
@@ -65,7 +66,7 @@ abstract class BaseController extends Controller {
 
     public function store(Request $request) {
         $this->handleRequest($this->getStoreRequest());
-        $result = $this->service->save($request);
+        $result = $this->service->save($request, null, 'create');
         if ($result['flag']) {
             $objectResource = new $this->resource($result['data']);
             return ApiResource::ok($objectResource->toArray($request), 'Data created successfully', Response::HTTP_CREATED);
@@ -77,21 +78,21 @@ abstract class BaseController extends Controller {
     public function update(Request $request, $id) {
         $this->handleRequest($this->getUpdateRequest());
 
-        $result = $this->service->save($request, $id);
+        $result = $this->service->save($request, $id, 'update');
         if ($result['flag']) {
             $objectResource = new $this->resource($result['data']);
             return ApiResource::ok($objectResource->toArray($request), 'Data updated successfully', Response::HTTP_CREATED);
         }
-        return ApiResource::error($result, 'Failed to update', Response::HTTP_BAD_REQUEST);
+        return ApiResource::error($result, 'Failed to update', $result['code']);
     }
 
-    public function destroy($id) {
+    public function destroy(Request $request, $id) {
         $this->handleRequest($this->getDeleteRequest());
-        $result = $this->service->delete($id);
+        $result = $this->service->delete($request, $id);
         if ($result['flag']) {
             return ApiResource::ok($result, 'Data deleted successfully', Response::HTTP_OK);
         }
-        return ApiResource::error($result, 'Failed to delete', Response::HTTP_BAD_REQUEST);
+        return ApiResource::error($result, 'Failed to delete', $result['code']); 
     }
 
     public function deleteMultiple(Request $request){
