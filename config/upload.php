@@ -17,12 +17,12 @@ return [
                     'enabled' => true
                 ],
                 'resize' => [
-                    'enabled' => true,
+                    'enabled' => false,
                     'width' => 800,
                     'height' => 600
                 ],
                 'optimize' => [
-                    'enabled' => true,
+                    'enabled' => false,
                     'quality' => 85
                 ],
                 'storage' => [

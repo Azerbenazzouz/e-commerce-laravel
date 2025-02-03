@@ -4,15 +4,19 @@ namespace App\Service\Impl;
 use App\Repositories\UserRepository;
 use App\Service\Interfaces\UserServiceInterface;
 use Carbon\Carbon;
-
+use App\Service\Impl\ImageUploadService;
+use Illuminate\Http\Request;
 class UserService extends BaseService implements UserServiceInterface {
     
     protected $userRepo;
     protected $payload;
+    protected $imageUploadService;
 
     public function __construct(
-        UserRepository $userRepo
+        UserRepository $userRepo,
+        ImageUploadService $imageUploadService
     ) {
+        $this->imageUploadService = $imageUploadService;
         parent::__construct($userRepo);
     }
 
@@ -40,8 +44,14 @@ class UserService extends BaseService implements UserServiceInterface {
         return ['created_at', 'birthday'];
     }
 
-    protected function processPayload() {
-        return $this->calculateAgeFromBirthday();
+    protected function processPayload(?Request $request = null) {
+        if (!$request) {
+            return $this;
+        }
+        
+        return $this
+            ->calculateAgeFromBirthday()
+            ->uploadAvatar($request);
     }
 
     protected function calculateAgeFromBirthday() {
@@ -50,7 +60,22 @@ class UserService extends BaseService implements UserServiceInterface {
         }
         return $this;
     }
-
+    
+    protected function uploadAvatar(Request $request) {
+        $argument = [
+            'files' => $request->file('image'),
+            'folder' => 'avatar',
+            'pipelineKey' => 'default',
+            'overrideOptions' => [
+                'optimize' => [
+                    'quality' => 80,
+                ]
+            ]
+        ];
+        $this->payload['avatar'] = $this->imageUploadService->upload(...$argument);
+        
+        return $this;
+    }
     protected function getManyToManyRelationship() : array {
         return ['roles'];
     }

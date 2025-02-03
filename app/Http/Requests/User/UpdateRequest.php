@@ -28,6 +28,7 @@ class UpdateRequest extends BaseRequest {
             'publish' => 'gt:0',
             'roles' => 'array',
             'roles.*' => 'required|exists:roles,id', // Validate each item in the array (roles ID exists in the roles table)
+            'image' => 'nullable|image|max:5120|mimes:jpeg,png,jpg,gif,svg'
         ];
     }
 

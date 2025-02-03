@@ -201,11 +201,12 @@ abstract class BaseService implements BaseServiceInterface{
     }
 
     /**
-     * processPayload() : BaseService
-     * processPayload elle permet de traiter les données avant de les enregistrer
+     * processPayload(Request $request) : BaseService | processPayload() : BaseService
+     * processPayload elle permet de traiter les données envoyées par le client
+     * @param Request $request
      * @return BaseService
      */
-    protected function processPayload() {
+    protected function processPayload(?Request $request = null) {
         return $this;
     }
 
@@ -233,8 +234,10 @@ abstract class BaseService implements BaseServiceInterface{
 
             $payload = $this
                 ->setPayload($request)
-                ->processPayload()
+                ->processPayload($request)
                 ->buildPayload();
+
+            dd("123");
             $extract = $this->extractManyToManyRelation($payload);
             $payload = $extract['payload'];
             $relationsPayload = $extract['relations'];

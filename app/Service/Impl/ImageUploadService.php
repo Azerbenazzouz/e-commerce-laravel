@@ -1,9 +1,9 @@
 <?php
 namespace App\Service\Impl;
 
-use Illuminate\Http\UploadedFile;
+use App\Pipelines\ImagePipelineManager;
+use App\Pipelines\ImageWrapper;
 use Intervention\Image\ImageManager;
-use Intervention\Image\Drivers\Imagick\Driver;
 
 class ImageUploadService {
 
@@ -11,30 +11,34 @@ class ImageUploadService {
     private $config;
     protected $uploadedFiles = [];
     protected $errors = [];
+    protected $pipelineManager;
 
 
-    public function __construct() {  
+    public function __construct(
+        ImagePipelineManager $pipelineManager
+    ) {  
         /**
          * @var \Tymon\JWTAuth\JWTGaurd
          */
         $this->auth = auth('api');
         $this->config = config('upload.image');
+        $this->pipelineManager = $pipelineManager;
     }
 
-    // public function handleFileUpload($files, $folder = null, $pipelineKey = 'default', array $overrideOptions = []){
-    //     $this->handleFileUpload = [];
-    //     $this->errors = [];
+    public function upload($files, $folder = null, $pipelineKey = 'default', array $overrideOptions = []){
+        $this->uploadedFiles = [];
+        $this->errors = [];
+        if(!is_array($files)) {
+            return $this->handleSingleUpload($files, $folder, $pipelineKey, $overrideOptions);
+        }
+        return $this->handleMultipleUpload($files, $folder, $pipelineKey, $overrideOptions);
+    }
 
-    //     if(!is_array($files)) {
-    //         return $this->handleSingleUpload($files, $folder, $pipelineKey, $overrideOptions);
-    //     }
+    public function handleSingleUpload($file, $folder = null, $pipelineKey = 'default', array $overrideOptions = []){
 
-    //     return $this->handleMultipleUpload($files, $folder, $pipelineKey, $overrideOptions);
-    // }
-
-    public function handleSingleUpload(UploadedFile $file, $folder = null, $pipelineKey = 'default', array $overrideOptions = []){
         try {
-            $result = $this->handleFileUpload2($file, $folder, $pipelineKey, $overrideOptions);
+            $result = $this->handleFileUpload($file, $folder, $pipelineKey, $overrideOptions);
+            dd($result);
             $this->uploadedFiles[] = $result;
             return $this->generateResponse();
             
@@ -51,9 +55,38 @@ class ImageUploadService {
 
     }
 
+    protected function handleFileUpload($file, $folder = null, $pipelineKey = 'default', array $overrideOptions = []) {
+        $this->validateFile($file);
 
-    
-    protected function validateFile(UploadedFile $file) {
+        $overrideOptions['storage'] = array_merge(
+            $overrideOptions['storage'] ?? [],
+            ['path' => $this->buildPath($folder)]
+        );
+
+        // Create an Intervention Image instance
+        $image = ImageManager::gd()->read($file);
+
+        // Wrap the image in the ImageWrapper class and set the original file
+        $wrappedImage = new ImageWrapper($image, $file);
+
+        // Process the image through the pipeline
+        $processImage = $this->pipelineManager->process($wrappedImage, $pipelineKey, $overrideOptions);
+
+        return [
+            'original_name' => $processImage->originalName,
+            'name' => $processImage->fileName,
+            'path' => $processImage->path,
+            'url' => $processImage->url
+        ];
+    }
+
+    protected function buildPath($folder = null) {
+        return trim($this->config['base_path']. '/' . $folder, '/');
+    }
+
+
+    protected function validateFile($file) {
+        // Check if file is valid
         if(!$file->isValid()) {
             throw new \Exception('File is not valid');
         }
@@ -78,20 +111,9 @@ class ImageUploadService {
         if(!empty($this->errors)) {
             $response['errors'] = $this->errors;
         }
+
+        return $response;
     }
     
-    protected function handleFileUpload(UploadedFile $file, $folder = null, $pipelineKey = 'default', array $overrideOptions = []){
-        $this->validateFile($file);
-        $overrideOptions['storage'] = array_merge(
-            $overrideOptions['storage'] ?? [],
-            ['path' => $this->buildPath($folder)]
-        );
-
-        $image = ImageManager::imagick()->read($file);
-        $image->originalFile = $file;
-    }
-
-    protected function buildPath($folder = null) {
-        return trim($this->config['base_path']. '/' . $folder, '/');
-    }
+    
 }
