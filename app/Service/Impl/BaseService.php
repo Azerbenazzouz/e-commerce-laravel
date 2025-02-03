@@ -236,7 +236,7 @@ abstract class BaseService implements BaseServiceInterface{
                 ->setPayload($request)
                 ->processPayload($request)
                 ->buildPayload();
-            dd($payload);
+
             $extract = $this->extractManyToManyRelation($payload);
             $payload = $extract['payload'];
             $relationsPayload = $extract['relations'];
