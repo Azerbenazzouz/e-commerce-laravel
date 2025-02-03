@@ -38,7 +38,7 @@ class ImageUploadService {
 
         try {
             $result = $this->handleFileUpload($file, $folder, $pipelineKey, $overrideOptions);
-            dd($result);
+            // dd($result);
             $this->uploadedFiles[] = $result;
             return $this->generateResponse();
             
@@ -75,8 +75,7 @@ class ImageUploadService {
         return [
             'original_name' => $processImage->originalName,
             'name' => $processImage->fileName,
-            'path' => $processImage->path,
-            'url' => $processImage->url
+            'path' => $processImage->path
         ];
     }
 

@@ -17,7 +17,6 @@ class StorageImagePipeline extends AbstractPipeline {
 
         // Set the path and URL on the ImageWrapper object
         $image->path = $path;
-        $image->url = Storage::disk($disk)->url($path);
 
         return $next($image);
     }

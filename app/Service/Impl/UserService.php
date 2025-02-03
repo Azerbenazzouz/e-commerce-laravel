@@ -62,6 +62,9 @@ class UserService extends BaseService implements UserServiceInterface {
     }
     
     protected function uploadAvatar(Request $request) {
+        if(is_null($request->file('image'))) {
+            return $this;
+        }
         $argument = [
             'files' => $request->file('image'),
             'folder' => 'avatar',
@@ -72,7 +75,8 @@ class UserService extends BaseService implements UserServiceInterface {
                 ]
             ]
         ];
-        $this->payload['avatar'] = $this->imageUploadService->upload(...$argument);
+        $processImage = $this->imageUploadService->upload(...$argument);
+        $this->payload['avatar'] = $processImage['files'][0]['path'] ?? null;
         
         return $this;
     }
