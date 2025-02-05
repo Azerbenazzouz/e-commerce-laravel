@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\V1\AuthController;
 use App\Http\Controllers\Api\V1\PermissionController;
+use App\Http\Controllers\Api\V1\Post\PostCatalogueController;
 use App\Http\Controllers\Api\V1\RoleController;
 use App\Http\Controllers\Api\V1\UserController;
 use Illuminate\Support\Facades\Route;
@@ -40,5 +41,14 @@ Route::prefix('v1')->middleware(['jwt' , 'checkPermission'])->group(function () 
         Route::post('create-module-permission', [PermissionController::class, 'createModulePermission']);
     });
     Route::resource('permissions', PermissionController::class)->except(['create', 'edit']);
+    /* ----------- */
+
+    /* Post Catalogues Route */
+    Route::group(['prefix' => 'post_catalogues'], function(){
+        Route::get('all', [PostCatalogueController::class, 'all']);
+        Route::delete('delete-multiple', [PostCatalogueController::class, 'deleteMultiple']);
+        Route::post('create-module-permission', [PostCatalogueController::class, 'createModulePermission']);
+    });
+    Route::resource('post_catalogues', PostCatalogueController::class)->except(['create', 'edit']);
     /* ----------- */
 });
