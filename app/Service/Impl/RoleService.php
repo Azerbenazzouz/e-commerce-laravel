@@ -3,6 +3,7 @@ namespace App\Service\Impl;
 
 use App\Repositories\RoleRepository;
 use App\Service\Interfaces\RoleServiceInterface;
+use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 
 class RoleService extends BaseService implements RoleServiceInterface{
@@ -41,7 +42,7 @@ class RoleService extends BaseService implements RoleServiceInterface{
     }
 
 
-    protected function processPayload() {
+    protected function processPayload(?Request $request = null) {
         return $this
             ->generateSlug($this->payload['name'] ?? '')
             ->generateSomething();

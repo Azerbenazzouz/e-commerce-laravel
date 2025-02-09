@@ -71,7 +71,7 @@ class AuthController extends Controller {
 
     public function refreshToken(RefreshTokenRequest $request) {
         $refreshToken = $this->refreshTokenRepository->findRefreshTokenValid($request->input('refreshToken'));
-        $user = $this->userRepository->findById($refreshToken->user_id);
+        $user = $this->userRepository->findByld($refreshToken->user_id);
         if(!$user){
             return ApiResource::message('Unauthorized', Response::HTTP_UNAUTHORIZED);
         }

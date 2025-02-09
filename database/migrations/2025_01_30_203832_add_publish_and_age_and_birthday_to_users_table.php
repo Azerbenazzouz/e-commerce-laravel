@@ -15,7 +15,6 @@ return new class extends Migration
             $table->tinyInteger('publish')->default(2);
             $table->date('birthday')->nullable();
             $table->integer('age')->nullable();
-
         });
     }
 
